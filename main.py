@@ -74,7 +74,7 @@ async def guesses(player_id):
         ready = f'Obaj gracze podali liczby'
         print(ready)
         if player_id == 0:
-            message = f'Przeciwnik zgasdaduje: {player2_guess[-1]}'
+            message = f'Przeciwnik zgaduje: {player2_guess[-1]}'
             await websocket.send_text(message)
         elif player_id == 1:
             message = f'Przeciwnik zgaduje: {player1_guess[-1]}'

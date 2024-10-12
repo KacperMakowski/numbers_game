@@ -3,37 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/static/output.css" rel="stylesheet">
-    <title>Number Guessing Game</title>
+    <link href="/static/output.css" rel="stylesheet">
+    <title>Guess-IT</title>
 </head>
-<body class="bg-gray-200">
-    <h1>Guess-IT</h1>
+<body class="bg-gray-400 text-white">
+    <div class="flex flex-col justify-center items-center">
+        <div class="text-9xl">
+            Guess-IT
+        </div>
+        <div id="Player" class="text-7xl" ></div>
+        <div id="waitingScreen" class=" text-9x place-content-center" style="display: none;">
+            Oczekiwanie na przeciwnika...
+        </div>
+        <div id="inputArea1" class="grid gap-2" style="display: none;" >
+            <h2 class="text-center">Podaj swoja 5-cyfrowa liczbe</h2>
+            <input type="text" id="number" maxlength="5" minlength="5" class="mb-2 border-2 border-blue-600 rounded-2xl text-black">
+            <button id="submitNumber" class="mt-2 bg-blue-600 rounded-3xl text-blue-600">000</button>
+        </div>
+        <div id="inputArea2" class="grid gap-2" style="display: none;" >
+            <h2 class="text-center">Podaj swoja 5-cyfrowa liczbe</h2>
+            <input type="text" id="guess" maxlength="5" minlength="5" class="mb-2 border-2 border-blue-600 rounded-2xl text-black">
+            <button id="submitGuess" class="mt-2 bg-blue-600 rounded-3xl text-blue-600">000</button>
+        </div>
+        <div id = "playerNumber" class = "text-2xl flex justify-center"></div>
 
-    <div id="status">Waiting for connection...</div>
-
-    <div id="inputArea1" style="display: none;">
-        <h2>Enter your number:</h2>
-        <input type="text" id="number" maxlength="5" minlength="5">
-        <button id="submitNumber">Submit</button>
+        <ul id="messages"></ul>
     </div>
-    <div id="inputArea2" style="display: none;">
-        <h2>Enter your guess:</h2>
-        <input type="text" id="guess" maxlength="5" minlength="5">
-        <button id="submitGuess">Submit</button>
-    </div>
-
-    <ul id="messages"></ul>
 
     <script>
         let playerId = null;  // Przechowuje ID gracza
         let y = 0;  // Flaga używana w logice gry
+        let x = 0;
 
         // Połączenie z WebSocket
         const ws = new WebSocket("ws://localhost:8000/ws");
 
         // Po otwarciu połączenia
         ws.onopen = function() {
-            document.getElementById("status").innerText = "Connected!";
             document.getElementById("inputArea1").style.display = "block";
         };
 
@@ -42,12 +48,26 @@
             const messageText = event.data;
             const messages = document.getElementById('messages');
             const message = document.createElement('li');
-            message.textContent = messageText;
-            messages.appendChild(message);
+            const player = document.getElementById('Player');
+            if(x === 0)
+            {
+                player.textContent = "Gracz "+messageText;
+                x = 1;
+            }
+            else
+            {
+                if(messageText.includes("Sprobuj")){}
+                else
+                {
+                    message.textContent = messageText;
+                    messages.appendChild(message);
+                }
+            }
 
             // Sprawdź, czy wiadomość zawiera ID gracza
             if (!playerId && messageText.match(/ID gracza/)) {
                 playerId = messageText.split(': ')[1];  // Wyodrębnij ID gracza
+
             }
 
             // Sprawdzenie zakończenia gry
@@ -55,10 +75,14 @@
                 document.getElementById("inputArea2").style.display = "none";  // Ukryj pole input po zakończeniu gry
             }
             if (messageText.includes("Obaj")) {
+                document.getElementById("waitingScreen").style.display = "none";
                 document.getElementById("inputArea2").style.display = "block";
+                document.getElementById("messages").style.display = "block";
             }
             if (messageText.includes("Sprobuj")) {
+                document.getElementById("waitingScreen").style.display = "none";
                 document.getElementById("inputArea2").style.display = "block";
+                document.getElementById("messages").style.display = "block";
             }
         };
 
@@ -72,13 +96,12 @@
                 ws.send(number);  // Wyślij liczbę do serwera
                 numberInput.value = "";  // Wyczyść pole po wysłaniu
                 document.getElementById("inputArea1").style.display = "none";
-                const messages = document.getElementById('messages');
-                const message = document.createElement('li');
-                message.textContent = "Czekanie na przeciwnika...\n"+"Twoja liczba to: " + number;
-                messages.appendChild(message);
+                document.getElementById("messages").style.display = "none";
+                document.getElementById("waitingScreen").style.display = "block";
+                document.getElementById("playerNumber").textContent = number;
 
             } else {
-                alert("Submit 5-digit number.");
+                alert("Wpisz liczbe 5-cyfrowa");
             }
         });
 
@@ -92,12 +115,14 @@
                 ws.send(guess);  // Wyślij strzał do serwera
                 guessInput.value = '';  // Wyczyść pole po wysłaniu
                 document.getElementById("inputArea2").style.display = "none";
+                document.getElementById("messages").style.display = "none";
+                document.getElementById("waitingScreen").style.display = "block";
                 const messages = document.getElementById('messages');
                 const message = document.createElement('li');
-                message.textContent = "Czekanie na przeciwnika...\n"+"Probujesz zgadnac: " + guess;
+                message.textContent = "Probujesz zgadnac: " + guess;
                 messages.appendChild(message);
             } else {
-                alert("Submit 5-digit number.");
+                alert("Wpisz liczbe 5-cyfrowa");
             }
         });
 
