@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/static/output.css" rel="stylesheet">
+    <title>Number Guessing Game</title>
+</head>
+<body class="bg-gray-200">
+    <h1>Guess-IT</h1>
+
+    <div id="status">Waiting for connection...</div>
+
+    <div id="inputArea1" style="display: none;">
+        <h2>Enter your number:</h2>
+        <input type="text" id="number" maxlength="5" minlength="5">
+        <button id="submitNumber">Submit</button>
+    </div>
+    <div id="inputArea2" style="display: none;">
+        <h2>Enter your guess:</h2>
+        <input type="text" id="guess" maxlength="5" minlength="5">
+        <button id="submitGuess">Submit</button>
+    </div>
+
+    <ul id="messages"></ul>
+
+    <script>
+        let playerId = null;  // Przechowuje ID gracza
+        let y = 0;  // Flaga używana w logice gry
+
+        // Połączenie z WebSocket
+        const ws = new WebSocket("ws://localhost:8000/ws");
+
+        // Po otwarciu połączenia
+        ws.onopen = function() {
+            document.getElementById("status").innerText = "Connected!";
+            document.getElementById("inputArea1").style.display = "block";
+        };
+
+        // Odbieranie wiadomości z serwera
+        ws.onmessage = function(event) {
+            const messageText = event.data;
+            const messages = document.getElementById('messages');
+            const message = document.createElement('li');
+            message.textContent = messageText;
+            messages.appendChild(message);
+
+            // Sprawdź, czy wiadomość zawiera ID gracza
+            if (!playerId && messageText.match(/ID gracza/)) {
+                playerId = messageText.split(': ')[1];  // Wyodrębnij ID gracza
+            }
+
+            // Sprawdzenie zakończenia gry
+            if (messageText.includes("Wygrał") || messageText.includes("REMIS")) {
+                document.getElementById("inputArea2").style.display = "none";  // Ukryj pole input po zakończeniu gry
+            }
+            if (messageText.includes("Obaj")) {
+                document.getElementById("inputArea2").style.display = "block";
+            }
+            if (messageText.includes("Sprobuj")) {
+                document.getElementById("inputArea2").style.display = "block";
+            }
+        };
+
+        // Event listener dla przycisku wysłania liczby
+        document.getElementById("submitNumber").addEventListener("click", function() {
+            const numberInput = document.getElementById("number");
+            const number = numberInput.value;
+
+            // Sprawdź, czy liczba jest 5-cyfrowa
+            if (number.length === 5 && !isNaN(number)) {
+                ws.send(number);  // Wyślij liczbę do serwera
+                numberInput.value = "";  // Wyczyść pole po wysłaniu
+                document.getElementById("inputArea1").style.display = "none";
+                const messages = document.getElementById('messages');
+                const message = document.createElement('li');
+                message.textContent = "Czekanie na przeciwnika...\n"+"Twoja liczba to: " + number;
+                messages.appendChild(message);
+
+            } else {
+                alert("Submit 5-digit number.");
+            }
+        });
+
+        // Event listener dla przycisku wysłania strzału
+        document.getElementById("submitGuess").addEventListener("click", function() {
+            const guessInput = document.getElementById("guess");
+            const guess = guessInput.value;
+
+            // Sprawdź, czy strzał jest 5-cyfrową liczbą
+            if (guess.length === 5 && !isNaN(guess)) {
+                ws.send(guess);  // Wyślij strzał do serwera
+                guessInput.value = '';  // Wyczyść pole po wysłaniu
+                document.getElementById("inputArea2").style.display = "none";
+                const messages = document.getElementById('messages');
+                const message = document.createElement('li');
+                message.textContent = "Czekanie na przeciwnika...\n"+"Probujesz zgadnac: " + guess;
+                messages.appendChild(message);
+            } else {
+                alert("Submit 5-digit number.");
+            }
+        });
+
+        // Funkcja do przetwarzania wiadomości od serwera (np. wyświetlanie wyników)
+        function processMessage(message) {
+            if (message.includes("Spróbuj zgadnąć liczbę przeciwnika")) {
+                // Gra kontynuuje, poproś o kolejny strzał
+                document.getElementById("guess").disabled = false;
+            } else if (message.includes("Wygrał") || message.includes("REMIS")) {
+                // Koniec gry
+                document.getElementById("inputArea2").style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
