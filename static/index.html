@@ -25,16 +25,34 @@
             <input type="text" id="guess" maxlength="5" minlength="5" class="mb-2 border-2 border-blue-600 rounded-2xl text-black">
             <button id="submitGuess" class="mt-2 bg-blue-600 rounded-3xl text-blue-600">000</button>
         </div>
+        <div id="guesses" class="flex flex-col justify-around items-center w-1/2">
+            <div id="info">Twoje zgadniecia: </div>
+            <div id ="guess1" class="flex flex-row justify-around text-2xl w-1/2 mb-4">
+                <div id = "number1" class=" text-white bg-gray-700 border-4 border-gray-800 rounded-2xl w-14 h-14 place-content-center text-center">1</div>
+                <div id = "number2" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">4</div>
+                <div id = "number3" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">3</div>
+                <div id = "number4" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">5</div>
+                <div id = "number5" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">9</div>
+            </div>
+            <div id ="guess2" class="flex flex-row justify-around text-2xl w-1/2">
+                <div id = "number6" class=" text-white bg-gray-700 border-4 border-gray-800 rounded-2xl w-14 h-14 place-content-center text-center">1</div>
+                <div id = "number7" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">4</div>
+                <div id = "number8" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">3</div>
+                <div id = "number9" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">5</div>
+                <div id = "number15" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">9</div>
+            </div>
+
+        </div>
+
         <div id = "playerNumber" class = "text-2xl flex justify-center"></div>
 
         <ul id="messages"></ul>
     </div>
 
     <script>
-        let playerId = null;  // Przechowuje ID gracza
-        let y = 0;  // Flaga używana w logice gry
         let x = 0;
-
+        let current_Guess = 0;
+        let y = 0;
         // Połączenie z WebSocket
         const ws = new WebSocket("ws://localhost:8000/ws");
 
@@ -45,45 +63,23 @@
 
         // Odbieranie wiadomości z serwera
         ws.onmessage = function(event) {
+            const messages = document.getElementById("messages");
             const messageText = event.data;
-            const messages = document.getElementById('messages');
-            const message = document.createElement('li');
-            const player = document.getElementById('Player');
-            if(x === 0)
+            const li = document.createElement("li");
+            li.appendChild(document.createTextNode(messageText));
+            processMessage(messageText, messages, li);
+            if(x !== 0)
             {
-                player.textContent = "Gracz "+messageText;
-                x = 1;
+                document.getElementById("inputArea2").style.display = "block";
+                document.getElementById("messages").style.display = "block";
+                document.getElementById("waitingScreen").style.display = "none";
             }
             else
             {
-                if(messageText.includes("Sprobuj")){}
-                else
-                {
-                    message.textContent = messageText;
-                    messages.appendChild(message);
-                }
+                x++;
             }
 
-            // Sprawdź, czy wiadomość zawiera ID gracza
-            if (!playerId && messageText.match(/ID gracza/)) {
-                playerId = messageText.split(': ')[1];  // Wyodrębnij ID gracza
 
-            }
-
-            // Sprawdzenie zakończenia gry
-            if (messageText.includes("Wygrał") || messageText.includes("REMIS")) {
-                document.getElementById("inputArea2").style.display = "none";  // Ukryj pole input po zakończeniu gry
-            }
-            if (messageText.includes("Obaj")) {
-                document.getElementById("waitingScreen").style.display = "none";
-                document.getElementById("inputArea2").style.display = "block";
-                document.getElementById("messages").style.display = "block";
-            }
-            if (messageText.includes("Sprobuj")) {
-                document.getElementById("waitingScreen").style.display = "none";
-                document.getElementById("inputArea2").style.display = "block";
-                document.getElementById("messages").style.display = "block";
-            }
         };
 
         // Event listener dla przycisku wysłania liczby
@@ -117,21 +113,63 @@
                 document.getElementById("inputArea2").style.display = "none";
                 document.getElementById("messages").style.display = "none";
                 document.getElementById("waitingScreen").style.display = "block";
-                const messages = document.getElementById('messages');
-                const message = document.createElement('li');
-                message.textContent = "Probujesz zgadnac: " + guess;
-                messages.appendChild(message);
+
             } else {
                 alert("Wpisz liczbe 5-cyfrowa");
             }
         });
 
         // Funkcja do przetwarzania wiadomości od serwera (np. wyświetlanie wyników)
-        function processMessage(message) {
-            if (message.includes("Spróbuj zgadnąć liczbę przeciwnika")) {
+        function processMessage(messageText, messages, li)
+        {
+            const guesses = document.getElementById("guesses");
+            if (!isNaN(messageText)) {
+                document.getElementById("Player").textContent = "Gracz " + messageText;
+            }
+            else if (messageText.includes("Obaj"))
+            {
+                y = 0;
+            }
+            else if (messageText.includes("zgaduje"))
+            {
+                messages.appendChild(li);
+            }
+            else if (messageText.includes("znajduje"))
+            {
+                let guess;
+
+                guess = document.getElementById("guess" + current_Guess);
+
+                if(!guess)
+                {
+                    guess = document.createElement('div');
+                    guess.id = "guess" + current_Guess;
+                    guess.className = guess
+                    guesses.appendChild(guess);
+                }
+
+                if (messageText.includes("znajduje sie na wlasciwej pozycji")) {
+                    const number = document.createElement("div");
+                    guess.appendChild(number);
+                    number.textContent = messageText;
+                    number.style.background = "green";
+                } else if (messageText.includes("znajduje sie, ale na zlej pozycji")) {
+                    const number = document.createElement("div");
+                    guess.appendChild(number);
+                    number.textContent = messageText;
+                    number.style.background = "yellow";
+                } else if (messageText.includes("nie znajduje sie")) {
+                    const number = document.createElement("div");
+                    guess.appendChild(number);
+                    number.textContent = messageText;
+                    number.style.background = "red";
+                }
+            }
+
+            else if (messageText.includes("Spróbuj zgadnąć liczbę przeciwnika")) {
                 // Gra kontynuuje, poproś o kolejny strzał
                 document.getElementById("guess").disabled = false;
-            } else if (message.includes("Wygrał") || message.includes("REMIS")) {
+            } else if (messageText.includes("Wygrał") || messageText.includes("REMIS")) {
                 // Koniec gry
                 document.getElementById("inputArea2").style.display = "none";
             }

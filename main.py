@@ -34,18 +34,18 @@ async def check_number(player_id):
         x = 0
         for number in str(player1_guess[-1]):
             if number == str(numbers[1][x]):
-                result = f"{number} znajduje się na właściwej pozycji"
+                result = f"{number} znajduje sie na wlasciwej pozycji"
             elif number in str(numbers[1]):
-                result = f"{number} znajduje się, ale na złej pozycji"
+                result = f"{number} znajduje sie, ale na zlej pozycji"
             else:
-                result = f"{number} nie znajduje się"
+                result = f"{number} nie znajduje sie"
             await websocket.send_text(result)
             x = x + 1
     elif player_id == 1:  # Dla gracza 2
         x = 0
         for number in str(player2_guess[-1]):
             if number == str(numbers[0][x]):
-                result = f"{number} znajduje sie na właściwej pozycji"
+                result = f"{number} znajduje sie na wlasciwej pozycji"
             elif number in str(numbers[0]):
                 result = f"{number} znajduje sie, ale na zlej pozycji"
             else:
