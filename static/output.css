@@ -574,40 +574,12 @@ video {
   display: grid;
 }
 
-.h-screen {
-  height: 100vh;
-}
-
-.h-1 {
-  height: 0.25rem;
-}
-
-.h-auto {
-  height: auto;
-}
-
-.w-0\.5 {
-  width: 0.125rem;
-}
-
-.w-1 {
-  width: 0.25rem;
-}
-
-.w-auto {
-  width: auto;
-}
-
 .flex-col {
   flex-direction: column;
 }
 
 .place-content-center {
   place-content: center;
-}
-
-.place-items-center {
-  place-items: center;
 }
 
 .items-center {
@@ -622,16 +594,12 @@ video {
   gap: 0.5rem;
 }
 
-.rounded-3xl {
-  border-radius: 1.5rem;
-}
-
 .rounded-2xl {
   border-radius: 1rem;
 }
 
-.border-4 {
-  border-width: 4px;
+.rounded-3xl {
+  border-radius: 1.5rem;
 }
 
 .border-2 {
@@ -643,19 +611,9 @@ video {
   border-color: rgb(37 99 235 / var(--tw-border-opacity));
 }
 
-.bg-gray-500 {
+.bg-blue-600 {
   --tw-bg-opacity: 1;
-  background-color: rgb(107 114 128 / var(--tw-bg-opacity));
-}
-
-.bg-gray-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
-}
-
-.bg-blue-700 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(29 78 216 / var(--tw-bg-opacity));
+  background-color: rgb(37 99 235 / var(--tw-bg-opacity));
 }
 
 .bg-gray-400 {
@@ -663,18 +621,8 @@ video {
   background-color: rgb(156 163 175 / var(--tw-bg-opacity));
 }
 
-.bg-blue-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(37 99 235 / var(--tw-bg-opacity));
-}
-
 .text-center {
   text-align: center;
-}
-
-.text-9xl {
-  font-size: 8rem;
-  line-height: 1;
 }
 
 .text-2xl {
@@ -687,19 +635,9 @@ video {
   line-height: 1;
 }
 
-.text-white {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.text-blue-700 {
-  --tw-text-opacity: 1;
-  color: rgb(29 78 216 / var(--tw-text-opacity));
-}
-
-.text-blue-600 {
-  --tw-text-opacity: 1;
-  color: rgb(37 99 235 / var(--tw-text-opacity));
+.text-9xl {
+  font-size: 8rem;
+  line-height: 1;
 }
 
 .text-black {
@@ -707,13 +645,13 @@ video {
   color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
-.focus\:border-blue-600:focus {
-  --tw-border-opacity: 1;
-  border-color: rgb(37 99 235 / var(--tw-border-opacity));
+.text-blue-600 {
+  --tw-text-opacity: 1;
+  color: rgb(37 99 235 / var(--tw-text-opacity));
 }
 
-.active\:border-blue-600:active {
-  --tw-border-opacity: 1;
-  border-color: rgb(37 99 235 / var(--tw-border-opacity));
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
