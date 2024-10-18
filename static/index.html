@@ -6,47 +6,46 @@
     <link href="/static/output.css" rel="stylesheet">
     <title>Guess-IT</title>
 </head>
-<body class="bg-gray-400 text-white">
-    <div class="flex flex-col justify-center items-center">
-        <div class="text-9xl">
-            Guess-IT
+<body class="bg-gray-600 text-white">
+    <div class="flex flex-row items-center justify-between">
+        <!--Historia przeciwnika - lewy -->
+        <div id="left" class="left flex flex-col justify-start text-center pt-5 w-1/4 bg-gray-700 text-2xl">
+                <div>
+                    Historia wyborow przeciwnika:
+                </div>
         </div>
-        <div id="Player" class="text-7xl" ></div>
-        <div id="waitingScreen" class=" text-9x place-content-center" style="display: none;">
-            Oczekiwanie na przeciwnika...
-        </div>
-        <div id="inputArea1" class="grid gap-2" style="display: none;" >
-            <h2 class="text-center">Podaj swoja 5-cyfrowa liczbe</h2>
-            <input type="text" id="number" maxlength="5" minlength="5" class="mb-2 border-2 border-blue-600 rounded-2xl text-black">
-            <button id="submitNumber" class="mt-2 bg-blue-600 rounded-3xl text-blue-600">000</button>
-        </div>
-        <div id="inputArea2" class="grid gap-2" style="display: none;" >
-            <h2 class="text-center">Podaj swoja 5-cyfrowa liczbe</h2>
-            <input type="text" id="guess" maxlength="5" minlength="5" class="mb-2 border-2 border-blue-600 rounded-2xl text-black">
-            <button id="submitGuess" class="mt-2 bg-blue-600 rounded-3xl text-blue-600">000</button>
-        </div>
-        <div id="guesses" class="flex flex-col justify-around items-center w-1/2">
-            <div id="info">Twoje zgadniecia: </div>
-            <div id ="guess1" class="flex flex-row justify-around text-2xl w-1/2 mb-4">
-                <div id = "number1" class=" text-white bg-gray-700 border-4 border-gray-800 rounded-2xl w-14 h-14 place-content-center text-center">1</div>
-                <div id = "number2" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">4</div>
-                <div id = "number3" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">3</div>
-                <div id = "number4" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">5</div>
-                <div id = "number5" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">9</div>
+        <!--Gra - środek -->
+        <div class="flex flex-col justify-center items-center h-screen">
+            <div class="text-9xl name spacing">
+                GUESS-IT
             </div>
-            <div id ="guess2" class="flex flex-row justify-around text-2xl w-1/2">
-                <div id = "number6" class=" text-white bg-gray-700 border-4 border-gray-800 rounded-2xl w-14 h-14 place-content-center text-center">1</div>
-                <div id = "number7" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">4</div>
-                <div id = "number8" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">3</div>
-                <div id = "number9" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">5</div>
-                <div id = "number15" class=" text-white bg-gray-700 rounded-2xl w-14 h-14 place-content-center text-center">9</div>
+            <div id="Player" class="text-6xl" ></div>
+            <div id="waitingScreen" class=" text-9x place-content-center" style="display: none;">
+                Oczekiwanie na przeciwnika...
+            </div>
+            <div id="inputArea1" class="grid gap-2" style="display: none;" >
+                <h2 class="text-center">Podaj swoja 5-cyfrowa liczbe</h2>
+                <input type="text" id="number" maxlength="5" minlength="5" class="mb-2 border-2 border-gray-800 text-black">
+                <button id="submitNumber" class="mt-2 bg-gray-700  text-gray-700">000</button>
+            </div>
+            <div id="inputArea2" class="grid gap-2" style="display: none;" >
+                <h2 class="text-center">Podaj swoja 5-cyfrowa liczbe</h2>
+                <input type="text" id="guess" maxlength="5" minlength="5" class="mb-2 border-2 border-gray-800 text-black">
+                <button id="submitGuess" class="mt-2 bg-gray-700  text-gray-700">000</button>
+            </div>
+            <div id="guesses" class="flex flex-col justify-around w-full items-center text-3xl">
             </div>
 
+            <ul id="messages"></ul>
+            <div id = "playerNumber" class = "text-2xl flex justify-center"></div>
         </div>
+        <!--Historia gracza - prawy -->
+        <div class="flex flex-col justify-start text-center pt-5  w-1/4 bg-gray-700 right text-2xl">
+            Historia twoich wyborow:
+            <div id ="guesses_history" class="flex flex-col justify-around w-full items-center text-xl ">
 
-        <div id = "playerNumber" class = "text-2xl flex justify-center"></div>
-
-        <ul id="messages"></ul>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -94,7 +93,7 @@
                 document.getElementById("inputArea1").style.display = "none";
                 document.getElementById("messages").style.display = "none";
                 document.getElementById("waitingScreen").style.display = "block";
-                document.getElementById("playerNumber").textContent = number;
+                document.getElementById("playerNumber").textContent = "Twoja liczba: " + number;
 
             } else {
                 alert("Wpisz liczbe 5-cyfrowa");
@@ -122,9 +121,9 @@
         // Funkcja do przetwarzania wiadomości od serwera (np. wyświetlanie wyników)
         function processMessage(messageText, messages, li)
         {
-            const guesses = document.getElementById("guesses");
+            const guesses_history = document.getElementById("guesses_history");
             if (!isNaN(messageText)) {
-                document.getElementById("Player").textContent = "Gracz " + messageText;
+                document.getElementById("Player").textContent = "GRACZ " + messageText;
             }
             else if (messageText.includes("Obaj"))
             {
@@ -132,37 +131,46 @@
             }
             else if (messageText.includes("zgaduje"))
             {
-                messages.appendChild(li);
+                let number_from_text = messageText.slice(-5);
+                const left_div = document.getElementById("left");
+                const left_child = document.createElement("div")
+                left_child.appendChild(document.createTextNode(number_from_text));
+                left_div.appendChild(left_child);
             }
-            else if (messageText.includes("znajduje"))
-            {
+            else if (messageText.includes("znajduje")) {
                 let guess;
 
-                guess = document.getElementById("guess" + current_Guess);
-
-                if(!guess)
-                {
+                guess = document.getElementById("guess_history" + current_Guess);
+                if (!guess) {
                     guess = document.createElement('div');
-                    guess.id = "guess" + current_Guess;
+                    guess.id = "guess_history" + current_Guess;
                     guess.className = guess
-                    guesses.appendChild(guess);
+                    guess.className = "guess_history"
+                    guess.style.display = 'flex';
+                    guess.style.justifyContent = 'space-around';
+                    guesses_history.appendChild(guess);
                 }
 
-                if (messageText.includes("znajduje sie na wlasciwej pozycji")) {
+                if (y < 5) {
                     const number = document.createElement("div");
+                    number.id = "number" + y;
+                    number.className = "number_history";
+                    number.textContent = messageText[0];
+
+                    if (messageText.includes("znajduje sie na wlasciwej pozycji")) {
+                        number.style.background = "rgba(0, 128, 0, 0.6)";
+                    } else if (messageText.includes("znajduje sie, ale na zlej pozycji")) {
+                        number.style.background = "rgba(255, 255, 0, 0.6)";
+                    } else if (messageText.includes("nie znajduje sie")) {
+                        number.style.background = "rgba(31,41,55,0.6)";
+                    }
                     guess.appendChild(number);
-                    number.textContent = messageText;
-                    number.style.background = "green";
-                } else if (messageText.includes("znajduje sie, ale na zlej pozycji")) {
-                    const number = document.createElement("div");
-                    guess.appendChild(number);
-                    number.textContent = messageText;
-                    number.style.background = "yellow";
-                } else if (messageText.includes("nie znajduje sie")) {
-                    const number = document.createElement("div");
-                    guess.appendChild(number);
-                    number.textContent = messageText;
-                    number.style.background = "red";
+                    y++;
+                }
+                if(y===5)
+                {
+                    y = 0;
+                    current_Guess++;
                 }
             }
 

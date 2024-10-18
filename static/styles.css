@@ -1,4 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+body
+{
+    font-family: 'Helvetica', serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+.guess_history
+{
+    width: 100%;
+    display: flex;
+    border-radius: 15px;
+    justify-content: center;
+    margin-top:8px;
+}
+.number_history
+{
+    width: 50px;
+    height: 50px;
+    background-color: rgba(55,65,81,255);
+    border: 3px solid rgba(31,41,55,255);
+    border-radius: 2px;
+    display: flex;
+    justify-content: center; /* Centrowanie poziome */
+    align-items: center;
+}
+.name
+{
+    text-shadow: black 3px 3px 3px;
+    letter-spacing: -10px;
+}
+#Player
+{
+    text-shadow: black 3px 3px 3px;
+}
+.left
+{
+    height: 95vh;
+    opacity: 0.9;
+    box-shadow: rgba(31,41,55,255) 6px 6px 3px;
+}
+.right
+{
+    min-height: 95vh;
+    max-height: 1000vh;
+    opacity: 0.9;
+    box-shadow: rgba(31,41,55,255) -6px 6px 3px;
+}
