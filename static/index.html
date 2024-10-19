@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -8,155 +9,134 @@
 </head>
 <body class="bg-gray-600 text-white">
     <div class="flex flex-row items-center justify-between">
-        <!--Historia przeciwnika - lewy -->
+        <!--Opponent's choice history - left -->
         <div id="left" class="left flex flex-col justify-start text-center pt-5 w-1/4 bg-gray-700 text-2xl">
-                <div>
-                    Historia wyborow przeciwnika:
-                </div>
+            <div>
+                Historia wyborów przeciwnika:
+            </div>
         </div>
-        <!--Gra - środek -->
-        <div class="flex flex-col justify-center items-center h-screen">
+        <!--Game - middle -->
+        <div id="mid" class="flex flex-col justify-center items-center h-screen">
+            <!-- Game title div -->
             <div class="text-9xl name spacing">
                 GUESS-IT
             </div>
-            <div id="Player" class="text-6xl" ></div>
-            <div id="waitingScreen" class=" text-9x place-content-center" style="display: none;">
-                Oczekiwanie na przeciwnika...
+            <!-- Displays the player's number -->
+            <div id="Player" class="text-6xl"></div>
+            <!-- Displays when the player is waiting for the second player to choose -->
+            <div id="waitingScreen" class="text-9x place-content-center" style="display: none;">
+                Czekanie na przeciwnika...
             </div>
-            <div id="inputArea1" class="grid gap-2" style="display: none;" >
-                <h2 class="text-center">Podaj swoja 5-cyfrowa liczbe</h2>
-                <input type="text" id="number" maxlength="5" minlength="5" class="mb-2 border-2 border-gray-800 text-black">
-                <button id="submitNumber" class="mt-2 bg-gray-700  text-gray-700">000</button>
+            <!-- Number input interface -->
+            <div id="inputArea1" class="text-5xl text-center" style="display: none;">
+                <div class="flex flex-row items-center justify-center">
+                    <input type="text" id="number" placeholder="Wpisz 5-cyfrową liczbę" maxlength="5" minlength="5" class="text-gray-700 block mb-2 mt-3 border-2 border-gray-800 items-center text-center">
+                </div>
+                <button id="submitNumber" class="mt-2 bg-gray-700 text-center w-72 text-gray-800 border-2 border-gray-800"> > </button>
             </div>
-            <div id="inputArea2" class="grid gap-2" style="display: none;" >
-                <h2 class="text-center">Podaj swoja 5-cyfrowa liczbe</h2>
-                <input type="text" id="guess" maxlength="5" minlength="5" class="mb-2 border-2 border-gray-800 text-black">
-                <button id="submitGuess" class="mt-2 bg-gray-700  text-gray-700">000</button>
-            </div>
-            <div id="guesses" class="flex flex-col justify-around w-full items-center text-3xl">
-            </div>
-
-            <ul id="messages"></ul>
-            <div id = "playerNumber" class = "text-2xl flex justify-center"></div>
+            <!-- Displays the number chosen by the player -->
+            <div id="playerNumber" class="text-2xl flex justify-center"></div>
         </div>
-        <!--Historia gracza - prawy -->
-        <div class="flex flex-col justify-start text-center pt-5  w-1/4 bg-gray-700 right text-2xl">
-            Historia twoich wyborow:
-            <div id ="guesses_history" class="flex flex-col justify-around w-full items-center text-xl ">
-
+        <!--Player's history - right -->
+        <div class="flex flex-col justify-start text-center pt-5 w-1/4 bg-gray-700 right text-2xl">
+            Historia twoich wyborów:
+            <!-- Divs that show the numbers guessed by the player, created in JS -->
+            <div id="guesses_history" class="flex flex-col justify-around w-full items-center">
             </div>
         </div>
     </div>
+</body>
+</html>
+
 
     <script>
-        let x = 0;
-        let current_Guess = 0;
-        let y = 0;
-        // Połączenie z WebSocket
+        let current_guess = 0;
+        let current_number = 0;
+        let end = 0;
+        let is_player_number = 0;
+        // Connection to WebSocket
         const ws = new WebSocket("ws://localhost:8000/ws");
 
-        // Po otwarciu połączenia
+        // On opening the connection
         ws.onopen = function() {
             document.getElementById("inputArea1").style.display = "block";
         };
 
-        // Odbieranie wiadomości z serwera
+        // Receiving messages from the server
         ws.onmessage = function(event) {
-            const messages = document.getElementById("messages");
             const messageText = event.data;
-            const li = document.createElement("li");
-            li.appendChild(document.createTextNode(messageText));
-            processMessage(messageText, messages, li);
-            if(x !== 0)
-            {
-                document.getElementById("inputArea2").style.display = "block";
-                document.getElementById("messages").style.display = "block";
+            processMessage(messageText);
+            // If the game is not over, keep showing the number input area
+            if(end!==1) {
+                document.getElementById("inputArea1").style.display = "block";
                 document.getElementById("waitingScreen").style.display = "none";
             }
-            else
-            {
-                x++;
-            }
-
-
         };
 
-        // Event listener dla przycisku wysłania liczby
+        // Event listener for the number submission button
         document.getElementById("submitNumber").addEventListener("click", function() {
             const numberInput = document.getElementById("number");
             const number = numberInput.value;
 
-            // Sprawdź, czy liczba jest 5-cyfrowa
+            // Check if the number is 5 digits long
             if (number.length === 5 && !isNaN(number)) {
-                ws.send(number);  // Wyślij liczbę do serwera
-                numberInput.value = "";  // Wyczyść pole po wysłaniu
+                ws.send(number);  // Send the number to the server
+                numberInput.value = "";  // Clear the input field after sending
                 document.getElementById("inputArea1").style.display = "none";
-                document.getElementById("messages").style.display = "none";
                 document.getElementById("waitingScreen").style.display = "block";
-                document.getElementById("playerNumber").textContent = "Twoja liczba: " + number;
-
+                // For the first loop, it will display the player's number in the div
+                if(is_player_number === 0) {
+                    document.getElementById("playerNumber").textContent = "Twoja liczba: " + number;
+                    is_player_number++;
+                }
             } else {
-                alert("Wpisz liczbe 5-cyfrowa");
+                alert("Proszę wpisać 5-cyfową liczbę");
             }
         });
 
-        // Event listener dla przycisku wysłania strzału
-        document.getElementById("submitGuess").addEventListener("click", function() {
-            const guessInput = document.getElementById("guess");
-            const guess = guessInput.value;
-
-            // Sprawdź, czy strzał jest 5-cyfrową liczbą
-            if (guess.length === 5 && !isNaN(guess)) {
-                ws.send(guess);  // Wyślij strzał do serwera
-                guessInput.value = '';  // Wyczyść pole po wysłaniu
-                document.getElementById("inputArea2").style.display = "none";
-                document.getElementById("messages").style.display = "none";
-                document.getElementById("waitingScreen").style.display = "block";
-
-            } else {
-                alert("Wpisz liczbe 5-cyfrowa");
-            }
-        });
-
-        // Funkcja do przetwarzania wiadomości od serwera (np. wyświetlanie wyników)
-        function processMessage(messageText, messages, li)
-        {
+        // Function to process messages from the server (e.g., displaying results)
+        function processMessage(messageText) {
             const guesses_history = document.getElementById("guesses_history");
+            // If it is a number, it means it is the player's ID, so display it in the div
             if (!isNaN(messageText)) {
                 document.getElementById("Player").textContent = "GRACZ " + messageText;
             }
-            else if (messageText.includes("Obaj"))
-            {
-                y = 0;
+            // If it includes "Both", it means we are moving to a new div, so reset current_number
+            else if (messageText.includes("Obaj")) {
+               current_number= 0;
             }
-            else if (messageText.includes("zgaduje"))
-            {
+            // Extract only the opponent's number from the text and add it to the left history bar
+            else if (messageText.includes("zgaduje")) {
                 let number_from_text = messageText.slice(-5);
                 const left_div = document.getElementById("left");
                 const left_child = document.createElement("div")
                 left_child.appendChild(document.createTextNode(number_from_text));
                 left_div.appendChild(left_child);
             }
+            // If it displays the appropriate text, create a div with the number of the given color depending on whether the player hit or missed, and add it to the player's right history
             else if (messageText.includes("znajduje")) {
                 let guess;
 
-                guess = document.getElementById("guess_history" + current_Guess);
+                guess = document.getElementById("guess_history" + current_guess);
+                // If guess does not exist, create it
                 if (!guess) {
                     guess = document.createElement('div');
-                    guess.id = "guess_history" + current_Guess;
+                    guess.id = "guess_history" + current_guess;
                     guess.className = guess
                     guess.className = "guess_history"
                     guess.style.display = 'flex';
                     guess.style.justifyContent = 'space-around';
                     guesses_history.appendChild(guess);
                 }
-
-                if (y < 5) {
+                // Create 5 number divs in the guess div and assign each the appropriate color
+                if (current_number < 5) {
                     const number = document.createElement("div");
-                    number.id = "number" + y;
+                    number.id = "number" + current_number;
                     number.className = "number_history";
                     number.textContent = messageText[0];
-
+                    setTimeout(() => {
+                      number.classList.add('animate'); // Add the "animate" class
+                    },(current_number+1)*200);
                     if (messageText.includes("znajduje sie na wlasciwej pozycji")) {
                         number.style.background = "rgba(0, 128, 0, 0.6)";
                     } else if (messageText.includes("znajduje sie, ale na zlej pozycji")) {
@@ -165,21 +145,28 @@
                         number.style.background = "rgba(31,41,55,0.6)";
                     }
                     guess.appendChild(number);
-                    y++;
+                    current_number++;
                 }
-                if(y===5)
-                {
-                    y = 0;
-                    current_Guess++;
+                // If there have already been 5 divs, reset so that the numbers start counting from the beginning again, and add current_guess to indicate that we are starting a new guess div
+                else {
+                   current_number = 0;
+                   current_guess++;
                 }
             }
-
-            else if (messageText.includes("Spróbuj zgadnąć liczbę przeciwnika")) {
-                // Gra kontynuuje, poproś o kolejny strzał
-                document.getElementById("guess").disabled = false;
-            } else if (messageText.includes("Wygrał") || messageText.includes("REMIS")) {
-                // Koniec gry
-                document.getElementById("inputArea2").style.display = "none";
+            else if (messageText.includes("Sprobuj zgadnac liczbe przeciwnika")) {
+                // The game continues, prompt for another shot
+                document.getElementById("number").disabled = false;
+            } else if (messageText.includes("Wygral") || messageText.includes("REMIS")) {
+                // Handle the end of the game
+                document.getElementById("inputArea1").style.display = "none";
+                document.getElementById("Player").style.display = "none";
+                document.getElementById("playerNumber").style.display = "none";
+                const div = document.createElement("div");
+                div.appendChild(document.createTextNode(messageText));
+                const mid = document.getElementById("mid");
+                mid.appendChild(div);
+                mid.style.fontSize = "50px";
+                end = 1;
             }
         }
     </script>

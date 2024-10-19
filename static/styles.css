@@ -11,6 +11,7 @@ body
     font-style: normal;
 }
 
+
 .guess_history
 {
     width: 100%;
@@ -21,14 +22,16 @@ body
 }
 .number_history
 {
-    width: 50px;
-    height: 50px;
+    width: 0;
+    height: 0;
     background-color: rgba(55,65,81,255);
-    border: 3px solid rgba(31,41,55,255);
+    border: 0 solid rgba(31,41,55,255);
     border-radius: 2px;
     display: flex;
     justify-content: center; /* Centrowanie poziome */
     align-items: center;
+    font-size: 0;
+    transition: all 2s ease;
 }
 .name
 {
@@ -51,4 +54,25 @@ body
     max-height: 1000vh;
     opacity: 0.9;
     box-shadow: rgba(31,41,55,255) -6px 6px 3px;
+}
+.number_history.animate
+{
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    border: 3px solid rgba(31,41,55,255);
+}
+#submitNumber:hover,
+#submitGuess:hover
+{
+    background-color: rgba(55,65,81,255);
+    color: white;
+    border-color: white;
+    transition: all 0.3s ease;
+}
+#submitNumber:active,
+#sumbitGuess:active
+{
+    scale: 0.9;
+    transition:all 0s ease;
 }
