@@ -1,4 +1,3 @@
-README for Guess-IT
 📖 Overview
 Guess-IT is a multiplayer browser-based number-guessing game where two players compete to guess each other's secret 5-digit numbers. 
 The game uses a FastAPI backend to manage WebSocket connections for real-time communication between players.
