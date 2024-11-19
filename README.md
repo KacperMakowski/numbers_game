@@ -86,7 +86,7 @@ MIT License. Feel free to use, modify, and distribute.
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
 
-Screenshots:
+🖼️ Screenshots:
 
 ![image](https://github.com/user-attachments/assets/d91eef96-13dd-471b-b129-32f8579f4379)
 
